@@ -1,10 +1,15 @@
 package com.itfrankfurt.spring.controller;
 
 import com.itfrankfurt.spring.entity.Animal;
+import com.itfrankfurt.spring.service.AnimalService;
+import com.itfrankfurt.spring.service.AnimalServiceListImpl;
 import org.apache.coyote.Response;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -15,21 +20,37 @@ import java.util.stream.Collectors;
 public class AnimalController {
     List<Animal> db = new ArrayList<>();
 
-    public AnimalController(){
-        db.add(new Animal("Vogel",1, true));
-        db.add(new Animal("Fisch",5, false));
-        db.add(new Animal("Löwe",100, false));
+//    @Autowired
+    private List<Animal> testAnimals;
+
+//    @Autowired
+//    @Qualifier("setImpl")
+    private AnimalService animalService;
+
+    @Autowired
+    public AnimalController(List<Animal> testAnimals, @Qualifier("setImpl") AnimalService animalService) {
+        this.testAnimals = testAnimals;
+        this.animalService = animalService;
+    }
+
+    public AnimalController() {
+
+    }
+
+    @PostConstruct
+    public void postConstruct() {
+        testAnimals.stream().forEach(a -> animalService.addAnimal(a));
     }
 
     @GetMapping("/animals")
-    public List<Animal> getAllAnimals(){
-        return db;
+    public List<Animal> getAllAnimals() {
+        System.out.println(animalService.getAllAnimals().toString());
+        return animalService.getAllAnimals();
     }
 
     @PostMapping("/animal")
     public Animal createAnimal(@RequestBody Animal animal) {
-        db.add(animal);
-        return animal;
+        return animalService.addAnimal(animal);
     }
 
     @PutMapping("/animal/{weight}")
@@ -42,19 +63,15 @@ public class AnimalController {
 
     @DeleteMapping("/animal/{name}")
     public void deleteAnimal(@PathVariable String name) {
-        db = db.stream()
-                .filter(animal -> !animal.getName().equals(name))
-                .collect(Collectors.toList());
+        animalService.deleteAnimalByName(name);
     }
 
     @GetMapping("/animal/{name}")
     public ResponseEntity<Animal> findAnimal(@PathVariable String name) {
-        Optional<Animal> first = db.stream()
-                .filter(a -> a.getName().equals(name))
-                .findFirst();
+        Optional<Animal> first = animalService.getAnimalByName(name);
 
         return first
-                .map( a -> ResponseEntity.ok(a))
+                .map(a -> ResponseEntity.ok(a))
                 .orElseGet(() -> ResponseEntity.status(404).build());
 //        if(first.isPresent()) {
 //            return ResponseEntity.ok(first.get());
@@ -62,7 +79,6 @@ public class AnimalController {
 //            return ResponseEntity.status(404).build();
 //        }
     }
-
 
 
 }
