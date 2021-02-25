@@ -10,4 +10,5 @@ public interface AnimalService {
     Animal addAnimal(Animal animal);
     Optional<Animal> getAnimalByName(String name);
     void deleteAnimalByName(String name);
+    List<Animal> getAllByNameAndWeightGreaterThan(String name, int weight);
 }

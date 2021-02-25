@@ -1,6 +1,16 @@
 package com.itfrankfurt.spring.entity;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
+@Entity
 public class Animal {
+
+    @Id
+    @GeneratedValue
+    private Long id;
+
     private String name;
     private int weight;
     private boolean canFly;
@@ -9,6 +19,14 @@ public class Animal {
         this.name = name;
         this.weight = weight;
         this.canFly = canFly;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public Animal() {

@@ -38,4 +38,9 @@ public class AnimalServiceListImpl implements AnimalService {
                 .filter(animal -> !animal.getName().equals(name))
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<Animal> getAllByNameAndWeightGreaterThan(String name, int weight) {
+        return null;
+    }
 }

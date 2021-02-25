@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api")
 public class AnimalController {
-    List<Animal> db = new ArrayList<>();
 
 //    @Autowired
     private List<Animal> testAnimals;
@@ -28,7 +27,7 @@ public class AnimalController {
     private AnimalService animalService;
 
     @Autowired
-    public AnimalController(List<Animal> testAnimals, @Qualifier("setImpl") AnimalService animalService) {
+    public AnimalController(List<Animal> testAnimals, @Qualifier("h2Impl") AnimalService animalService) {
         this.testAnimals = testAnimals;
         this.animalService = animalService;
     }
@@ -39,6 +38,7 @@ public class AnimalController {
 
     @PostConstruct
     public void postConstruct() {
+
         testAnimals.stream().forEach(a -> animalService.addAnimal(a));
     }
 
@@ -53,13 +53,13 @@ public class AnimalController {
         return animalService.addAnimal(animal);
     }
 
-    @PutMapping("/animal/{weight}")
-    public Animal updateWeight(@RequestBody Animal animal, @PathVariable int weight) {
-        db = db.stream().filter(a -> !a.equals(animal)).collect(Collectors.toList());
-        animal.setWeight(weight);
-        db.add(animal);
-        return animal;
-    }
+//    @PutMapping("/animal/{weight}")
+//    public Animal updateWeight(@RequestBody Animal animal, @PathVariable int weight) {
+//        db = db.stream().filter(a -> !a.equals(animal)).collect(Collectors.toList());
+//        animal.setWeight(weight);
+//        db.add(animal);
+//        return animal;
+//    }
 
     @DeleteMapping("/animal/{name}")
     public void deleteAnimal(@PathVariable String name) {
@@ -78,6 +78,11 @@ public class AnimalController {
 //        } else {
 //            return ResponseEntity.status(404).build();
 //        }
+    }
+
+    @GetMapping("/animals/{name}/{weight}")
+    public List<Animal> findAllByNameAndWeightGreaterThan(@PathVariable String name,@PathVariable int weight) {
+        return animalService.getAllByNameAndWeightGreaterThan(name,weight);
     }
 
 
